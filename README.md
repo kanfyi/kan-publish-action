@@ -7,7 +7,7 @@ whether the site is actually live, not merely whether an upload was accepted.
 ## GitHub Actions
 
 ```yaml
-- uses: ifarobi/kan-publish-action@v1
+- uses: kanfyi/kan-publish-action@v1
   with:
     token: ${{ secrets.KANFYI_TOKEN }}
     site: abc12345          # your site's eight-character ID
@@ -27,11 +27,10 @@ The action's `url` output carries the live URL for later steps, and `outcome`
 carries what became of the publish (`live`, `held`, `pending`, `failed`).
 
 The step fails on anything but `live`. To handle a held or pending publish
-without failing the job — a new account's first publish is always held — let
-the step continue and branch on the outcome:
+without failing the job, let the step continue and branch on the outcome:
 
 ```yaml
-- uses: ifarobi/kan-publish-action@v1
+- uses: kanfyi/kan-publish-action@v1
   id: publish
   continue-on-error: true
   with:
@@ -47,7 +46,7 @@ the step continue and branch on the outcome:
 ## Any other CI (GitLab, Jenkins, a laptop)
 
 Download the `kan` binary for your platform from
-[Releases](https://github.com/ifarobi/kan-publish-action/releases), verify
+[Releases](https://github.com/kanfyi/kan-publish-action/releases), verify
 it against `checksums.txt`, then:
 
 ```sh
@@ -89,7 +88,7 @@ module.exports = {
 |------|---------|
 | 0 | The publish outcome is **live**. The URL is printed to stdout (and nothing else is). |
 | 1 | The publish **failed** or the site is not being served — the reason is on stderr. Also any usage or API error. |
-| 2 | The site is **held** for review. Expected for a new account's first publish; nothing further is needed. Do not retry — republishing will not clear a review. |
+| 2 | The site is **held** for review: the scan asked for a person to look at it. Nothing further is needed. Do not retry — republishing will not clear a review. |
 | 3 | Still **pending** when the wait ran out. Check later with `kan status --site <id>`; do not republish, that spends one of your daily publishes. |
 
 `kan status --site <id>` re-reads the outcome any time, with the same exit

@@ -50,7 +50,7 @@ runs:
           Windows-X64)  BIN="kan-windows-amd64.exe" ;;
           *) echo "unsupported runner: ${RUNNER_OS}/${RUNNER_ARCH}" >&2; exit 1 ;;
         esac
-        BASE="https://github.com/ifarobi/kan-publish-action/releases/download/${VERSION}"
+        BASE="https://github.com/kanfyi/kan-publish-action/releases/download/${VERSION}"
         curl -fsSL --retry 3 -o "${RUNNER_TEMP}/${BIN}" "${BASE}/${BIN}"
         curl -fsSL --retry 3 -o "${RUNNER_TEMP}/checksums.txt" "${BASE}/checksums.txt"
         # macOS runners ship no sha256sum (only shasum), and macOS is two of
@@ -79,9 +79,9 @@ runs:
         # Deliberately not `set -e`, and the exit code is captured rather than
         # inherited: the CLI grades its answer 0 live / 1 failed / 2 held /
         # 3 pending, and letting the shell abort here collapsed all three
-        # nonzero states into one red step. A first publish from a new account
-        # is ALWAYS held for review, so the common case looked like a broken
-        # deploy and invited the republish the README forbids. The step still
+        # nonzero states into one red step. A publish the scanner holds for a
+        # look is a normal state, and reading it as a broken deploy invited the
+        # republish the README forbids. The step still
         # fails on every nonzero code, but writes the outputs first, so a
         # workflow using continue-on-error can read steps.<id>.outputs.outcome
         # and tell "under review" from "rejected".
