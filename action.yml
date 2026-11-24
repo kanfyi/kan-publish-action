@@ -19,6 +19,13 @@ inputs:
     description: "How long to wait for the publish outcome (Go duration, e.g. 120s)"
     required: false
     default: "120s"
+  spa:
+    description: >-
+      Single-page-app fallback: "on" serves the site's index.html for a
+      missing path with no file extension (browser-history routers such as
+      React Router), "off" switches it off. Empty leaves the setting alone.
+    required: false
+    default: ""
 outputs:
   url:
     description: >-
@@ -74,6 +81,7 @@ runs:
         KANFYI_SITE: ${{ inputs.site }}
         KAN_DIR: ${{ inputs.dir }}
         KAN_WAIT: ${{ inputs.wait }}
+        KAN_SPA: ${{ inputs.spa }}
       run: |
         set -uo pipefail
         # Deliberately not `set -e`, and the exit code is captured rather than
@@ -85,7 +93,12 @@ runs:
         # fails on every nonzero code, but writes the outputs first, so a
         # workflow using continue-on-error can read steps.<id>.outputs.outcome
         # and tell "under review" from "rejected".
-        url="$("${KAN_BIN}" publish "${KAN_DIR}" --wait "${KAN_WAIT}")"
+        # The guarded ${spa_args[@]+...} form, never a bare quoted expansion: macOS runners' bash
+        # is 3.2, where an empty array under `set -u` is "unbound variable" and
+        # the step dies before publishing, for every workflow without `spa:`.
+        spa_args=()
+        if [ -n "${KAN_SPA}" ]; then spa_args=(--spa "${KAN_SPA}"); fi
+        url="$("${KAN_BIN}" publish "${KAN_DIR}" --wait "${KAN_WAIT}" ${spa_args[@]+"${spa_args[@]}"})"
         code=$?
         case "${code}" in
           0) outcome="live" ;;

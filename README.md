@@ -26,6 +26,13 @@ Setup, once:
 The action's `url` output carries the live URL for later steps, and `outcome`
 carries what became of the publish (`live`, `held`, `pending`, `failed`).
 
+A single-page app built with a browser-history router (React Router,
+TanStack Router, Vue Router) needs the site's single-page-app fallback, so a
+refresh or a shared link to `/about` opens the app instead of a 404. Add
+`spa: on` (or `--spa on` with the CLI); `spa: off` switches it off, and leaving
+it out keeps whatever the site has. The setting stays with the site, like its
+visibility.
+
 The step fails on anything but `live`. To handle a held or pending publish
 without failing the job, let the step continue and branch on the outcome:
 
@@ -103,6 +110,7 @@ codes and the same stdout shape.
   at publish time.
 - A release replaces the site's content atomically. Visibility (public,
   link-only, private) is a separate setting the CLI never touches — set it
-  in the dashboard.
+  in the dashboard. The single-page-app fallback changes only when you pass
+  `spa`.
 - Rate limits per account: 100 publishes per rolling 24h, 3 uploads in
   flight, 10 sites.
